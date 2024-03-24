@@ -22,8 +22,7 @@ export const utils = {
         ];
         let duration = (date - new Date()) / 1000;
 
-        for (let i = 0; i < DIVISIONS.length; i++) {
-            const division = DIVISIONS[i];
+        for (const division of DIVISIONS) {
             if (Math.abs(duration) < division.amount) {
                 return formatter.format(Math.round(duration), division.name);
             }
@@ -143,91 +142,7 @@ class ActivityManagerOverview extends LitElement {
                     </div>
                 </div>
             </ha-card>
-            ${this._renderAddDialog()} ${this._renderUpdateDialog()}
-            ${this._renderRemoveDialog()}
-        `;
-    }
-
-    _renderActionButton(activity) {
-        return html`
-            <div class="am-action">
-                ${this._config.mode == "manage"
-                    ? html`
-                          <mwc-icon-button
-                              @click=${(ev) =>
-                                  this._showRemoveDialog(ev, activity)}
-                              data-am-id=${activity.id}
-                          >
-                              <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                              >
-                                  <path
-                                      d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z"
-                                  />
-                              </svg>
-                          </mwc-icon-button>
-                      `
-                    : ``}
-            </div>
-        `;
-    }
-
-    _renderAddDialog() {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = (date.getMonth() + 1).toString().padStart(2, "0");
-        const day = date.getDate().toString().padStart(2, "0");
-        const hours = date.getHours().toString().padStart(2, "0");
-        const minutes = date.getMinutes().toString().padStart(2, "0");
-        let val = `${year}-${month}-${day}T${hours}:${minutes}`;
-
-        return html`
-            <ha-dialog class="manage-form" heading="Add Activity for ${this._config["category"]}">
-                <form>
-                    <div class="am-add-form" >
-                        <input
-                            type="hidden"
-                            id="category"
-                            placeholder="Category"
-                            value="${this._config["category"]}" />
-
-                        <div class="form-item">
-                            <ha-textfield type="text" id="name" placeholder="Name" style="grid-column: 1 / span 2">
-                            </ha-textfield>
-                        </div>
-                        
-                        <div class="form-item">
-                            <label for="frequency-day">Frequency</label>
-                            <div class="duration-input">
-                                <ha-textfield type="number" inputmode="numeric" no-spinner label="dd" id="frequency-day" value="0"></ha-textfield>
-                                <ha-textfield type="number" inputmode="numeric" no-spinner label="hh" id="frequency-hour" value="0"></ha-textfield>
-                                <ha-textfield type="number" inputmode="numeric" no-spinner label="mm" id="frequency-minute" value="0"></ha-textfield>
-                                <ha-textfield type="number" inputmode="numeric" no-spinner label="ss"id="frequency-second" value="0"></ha-textfield>
-                            </div>
-                        </div>
-
-                        <div class="form-item">
-                            <label for="icon">Icon</label>
-                            <ha-icon-picker type="text" id="icon">
-                            </ha-icon-picker>
-                        </div>
-
-                        <div class="form-item">
-                            <label for="last-completed">Last Completed</label>
-                            <ha-textfield type="datetime-local" id="last-completed" value=${val}>
-                            </ha-textfield>
-                        </div>
-                    </div>
-                    </ha-form>
-                </form>
-                <mwc-button slot="primaryAction" dialogAction="discard" @click=${this._addActivity}>
-                    Add
-                </mwc-button>
-                <mwc-button slot="secondaryAction" dialogAction="cancel">
-                    Cancel
-                </mwc-button>
-            </ha-dialog>
+            ${this._renderUpdateDialog()}
         `;
     }
 
@@ -239,34 +154,6 @@ class ActivityManagerOverview extends LitElement {
                 </div>
                 <div class="info-container">
                     <div class="primary">${this._config.header}</div>
-                </div>
-                <div class="action-container">
-                    <mwc-icon-button
-                        @click=${() => {
-                            this.shadowRoot
-                                .querySelector(".manage-form")
-                                .show();
-                        }}
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                d="M14.3 21.7C13.6 21.9 12.8 22 12 22C6.5 22 2 17.5 2 12S6.5 2 12 2C13.3 2 14.6 2.3 15.8 2.7L14.2 4.3C13.5 4.1 12.8 4 12 4C7.6 4 4 7.6 4 12S7.6 20 12 20C12.4 20 12.9 20 13.3 19.9C13.5 20.6 13.9 21.2 14.3 21.7M7.9 10.1L6.5 11.5L11 16L21 6L19.6 4.6L11 13.2L7.9 10.1M18 14V17H15V19H18V22H20V19H23V17H20V14H18Z"
-                            />
-                        </svg>
-                    </mwc-icon-button>
-                    <mwc-icon-button @click=${this._switchMode}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"
-                            />
-                        </svg>
-                    </mwc-icon-button>
                 </div>
             </div>
         `;
@@ -309,65 +196,6 @@ class ActivityManagerOverview extends LitElement {
                 </mwc-button>
             </ha-dialog>
         `;
-    }
-
-    _renderRemoveDialog() {
-        return html`
-            <ha-dialog class="confirm-remove" heading="Confirm">
-                <div>
-                    Remove
-                    ${this._currentItem ? this._currentItem["name"] : ""}?
-                </div>
-                <mwc-button
-                    slot="primaryAction"
-                    dialogAction="discard"
-                    @click=${this._removeActivity}
-                >
-                    Remove
-                </mwc-button>
-                <mwc-button slot="secondaryAction" dialogAction="cancel">
-                    Cancel
-                </mwc-button>
-            </ha-dialog>
-        `;
-    }
-
-    _addActivity() {
-        let name = this.shadowRoot.querySelector("#name");
-        let category = this.shadowRoot.querySelector("#category");
-        let icon = this.shadowRoot.querySelector("#icon");
-        let last_completed = this.shadowRoot.querySelector("#last-completed");
-
-        let frequency = {};
-        frequency.days = utils._getNumber(
-            this.shadowRoot.querySelector("#frequency-day").value,
-            0
-        );
-        frequency.hours = utils._getNumber(
-            this.shadowRoot.querySelector("#frequency-hour").value,
-            0
-        );
-        frequency.minutes = utils._getNumber(
-            this.shadowRoot.querySelector("#frequency-minute").value,
-            0
-        );
-        frequency.seconds = utils._getNumber(
-            this.shadowRoot.querySelector("#frequency-second").value,
-            0
-        );
-
-        this._hass.callService("activity_manager", "add_activity", {
-            name: name.value,
-            category: category.value,
-            frequency: frequency,
-            icon: icon.value,
-            last_completed: last_completed.value,
-        });
-        name.value = "";
-        icon.value = "";
-
-        let manageEl = this.shadowRoot.querySelector(".manage-form");
-        manageEl.close();
     }
 
     _fetchData = async () => {
@@ -415,29 +243,10 @@ class ActivityManagerOverview extends LitElement {
         this.requestUpdate();
     };
 
-    _showRemoveDialog(ev, item) {
-        ev.stopPropagation();
-        this._currentItem = item;
-        this.requestUpdate();
-        this.shadowRoot.querySelector(".confirm-remove").show();
-    }
-
     _showUpdateDialog(item) {
         this._currentItem = item;
         this.requestUpdate();
         this.shadowRoot.querySelector(".confirm-update").show();
-    }
-
-    _switchMode(ev) {
-        switch (this._config.mode) {
-            case "basic":
-                this._config.mode = "manage";
-                break;
-            case "manage":
-                this._config.mode = "basic";
-                break;
-        }
-        this.requestUpdate();
     }
 
     _updateActivity() {
@@ -451,15 +260,6 @@ class ActivityManagerOverview extends LitElement {
             type: "activity_manager/update",
             item_id: this._currentItem["id"],
             last_completed: last_completed.value,
-        });
-    }
-
-    _removeActivity() {
-        if (this._currentItem == null) return;
-
-        this._hass.callWS({
-            type: "activity_manager/remove",
-            item_id: this._currentItem["id"],
         });
     }
 
@@ -477,15 +277,6 @@ class ActivityManagerOverview extends LitElement {
         }
         .content {
             padding: 0 12px 12px 12px;
-        }
-        .am-add-form {
-            padding-top: 10px;
-            display: grid;
-            align-items: center;
-            gap: 24px;
-        }
-        .am-add-button {
-            padding-top: 10px;
         }
         .duration-input {
             display: flex;
@@ -515,12 +306,6 @@ class ActivityManagerOverview extends LitElement {
         }
         .primary {
             font-weight: bold;
-        }
-        .action-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
         }
         .am-grid {
             display: grid;
@@ -560,13 +345,7 @@ class ActivityManagerOverview extends LitElement {
         .am-item-secondary {
             font-size: var(--am-item-secondary-font-size, 12px);
         }
-
-        .am-action {
-            display: grid;
-            grid-template-columns: auto auto;
-            align-items: center;
-        }
-
+        
         .am-due-soon {
             color: var(--am-item-due-soon-primary-color, #ffffff);
             background-color: var(
